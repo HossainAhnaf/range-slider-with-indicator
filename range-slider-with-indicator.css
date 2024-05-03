@@ -1,3 +1,36 @@
 div[role="range-slider-with-indicator"] {
 
 }
+div[role="range-slider-with-indicator"] > .indicator {
+width: 100%;
+height: 50%;
+background-color: red;
+}
+
+div[role="range-slider-with-indicator"] > .slider {
+width: 100%;
+height: 50%;
+background-color: green;
+
+
+}
+div[role="range-slider-with-indicator"] > .slider > .runnable-track {
+width: 100%;
+height: 50%;
+display: flex;
+align-items: center;
+background-color: gray;
+}
+div[role="range-slider-with-indicator"] > .slider > .runnable-track >.completed-track {
+ width: 0%;
+ height: 100%;
+ background-color: blue;
+
+}
+div[role="range-slider-with-indicator"] > .slider > .runnable-track > .thumb {
+width: 20px;
+height: 100%;
+background-color: white;
+cursor: grab;
+touch-action: none;
+}
