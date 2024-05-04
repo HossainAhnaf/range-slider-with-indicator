@@ -33,23 +33,26 @@ function setSldierControls(rangeSliderWithIndicator,minValue,maxValue) {
   const thumb = runnableTrack.querySelector('.thumb')
   const runnableTrackWidth = runnableTrack.getBoundingClientRect().width
   const initialValue = parseInt(rangeSliderWithIndicator.getAttribute('data-value'))
-
+  const valueArr = []
   let currentValue = initialValue
   let startX = 0
+  console.log((maxValue + minValue));
+  for (let i = minValue; i <= maxValue; i+= ((maxValue + minValue)  / 100) * 1) {
+    valueArr.push(i)
+   }
   completedTrack.style.width = `${ ((initialValue - minValue) / (maxValue - minValue)) * 100}%`
 
  function getPercentValue(value) {
    return  (value / maxValue) * 100
  }
  const thumbPointerMoveHandler = (e) => {
-    console.log( (e.clientX - startX) / runnableTrackWidth)
-
-    // const value = (e.clientX - startX) / runnableTrackWidth * maxValue
-    // currentValue = Math.max(minValue, Math.min(maxValue, value))
-    // const percent =  getPercentValue(currentValue)
-    // completedTrack.style.width = `${percent}%`
-    // Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
-    // rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
+    console.log(valueArr.length);
+    const value = (e.clientX - startX) / runnableTrackWidth * maxValue
+    currentValue = Math.max(minValue, Math.min(maxValue, value))
+    const percent =  getPercentValue(currentValue)
+    completedTrack.style.width = `${percent}%`
+    Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
+    rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
 }
  const thumbPointerUpHandler = (e) => {
     rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-change'))
@@ -76,7 +79,7 @@ function setMarks(minValue,maxValue) {
     marksArray.push(i)
    }
 
-   console.log(marksArray);
+//    console.log(marksArray);
 
 //    const indicator = document.querySelector('.indicator')
 //    indicator.innerHTML = marksArray.map(i => `<div class="mark">${i}</div>`).join('')
