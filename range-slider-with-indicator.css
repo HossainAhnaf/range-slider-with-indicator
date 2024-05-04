@@ -34,5 +34,5 @@ height: 100%;
 background-color: white;
 cursor: grab;
 touch-action: none;
-
+border-radius: 10px;
 }

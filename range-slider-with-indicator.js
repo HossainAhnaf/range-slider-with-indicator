@@ -3,6 +3,8 @@ window.addEventListener('load', () => {
     rangeSliders.forEach(initRangeSliderWithIndicator)
 }) 
 function initRangeSliderWithIndicator(rangeSliderWithIndicator) {
+    const minValue = parseInt(rangeSliderWithIndicator.getAttribute('data-min'))
+    const maxValue = parseInt(rangeSliderWithIndicator.getAttribute('data-max'))
     rangeSliderWithIndicator.innerHTML = `
       <div class="indicator"></div>
       <div class="slider">
@@ -12,10 +14,9 @@ function initRangeSliderWithIndicator(rangeSliderWithIndicator) {
         </div>
       </div>
     `
-   const marksArray = JSON.parse(rangeSliderWithIndicator.getAttribute('data-indicator-marks'))
    setHandlers(rangeSliderWithIndicator)
-   setSldierControls(rangeSliderWithIndicator)
-   setMarks(marksArray)
+   setSldierControls(rangeSliderWithIndicator,minValue,maxValue)
+   setMarks(minValue,maxValue)
 }   
 function setHandlers(rangeSliderWithIndicator) {
     const {oninput,onchange} = rangeSliderWithIndicator
@@ -26,14 +27,13 @@ function setHandlers(rangeSliderWithIndicator) {
      rangeSliderWithIndicator.addEventListener('r-s-w-i-change', onchange)
     }
 }
-function setSldierControls(rangeSliderWithIndicator) {
+function setSldierControls(rangeSliderWithIndicator,minValue,maxValue) {
   const runnableTrack = rangeSliderWithIndicator.querySelector('.slider > .runnable-track')
   const completedTrack = runnableTrack.querySelector('.completed-track')
   const thumb = runnableTrack.querySelector('.thumb')
   const runnableTrackWidth = runnableTrack.getBoundingClientRect().width
   const initialValue = parseInt(rangeSliderWithIndicator.getAttribute('data-value'))
-  const minValue = parseInt(rangeSliderWithIndicator.getAttribute('data-min'))
-  const maxValue = parseInt(rangeSliderWithIndicator.getAttribute('data-max'))
+
   let currentValue = initialValue
   let startX = 0
   completedTrack.style.width = `${getPercentValue(initialValue)}%`
@@ -69,7 +69,15 @@ function setSldierControls(rangeSliderWithIndicator) {
  
 }
 
-function setMarks(marksArray) {
+function setMarks(minValue,maxValue) {
+   const marksArray = []
+   for (let i = minValue; i <= maxValue; i+= maxValue / 3) {
+    marksArray.push(i)
+   }
 
+   console.log(marksArray);
+
+//    const indicator = document.querySelector('.indicator')
+//    indicator.innerHTML = marksArray.map(i => `<div class="mark">${i}</div>`).join('')
 }
 
