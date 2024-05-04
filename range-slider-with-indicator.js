@@ -20,10 +20,10 @@ function initRangeSliderWithIndicator(rangeSliderWithIndicator) {
 function setHandlers(rangeSliderWithIndicator) {
     const {oninput,onchange} = rangeSliderWithIndicator
     if (oninput) {
-     rangeSliderWithIndicator.addEventListener('input', oninput)
+     rangeSliderWithIndicator.addEventListener('r-s-w-i-input', oninput)
     }
     if (onchange) {
-     rangeSliderWithIndicator.addEventListener('change', onchange)
+     rangeSliderWithIndicator.addEventListener('r-s-w-i-change', onchange)
     }
 }
 function setSldierControls(rangeSliderWithIndicator) {
@@ -31,19 +31,29 @@ function setSldierControls(rangeSliderWithIndicator) {
   const completedTrack = runnableTrack.querySelector('.completed-track')
   const thumb = runnableTrack.querySelector('.thumb')
   const runnableTrackWidth = runnableTrack.getBoundingClientRect().width
+  const initialValue = parseInt(rangeSliderWithIndicator.getAttribute('data-value'))
+  const minValue = parseInt(rangeSliderWithIndicator.getAttribute('data-min'))
+  const maxValue = parseInt(rangeSliderWithIndicator.getAttribute('data-max'))
+  let currentValue = initialValue
   let startX = 0
-  let currentX = 0
+  completedTrack.style.width = `${getPercentValue(initialValue)}%`
+
+ function getPercentValue(value) {
+    // console.log((value / maxValue) * 100);
+   return (value / maxValue) * 100
+ }
+
  const thumbPointerMoveHandler = (e) => {
-    const percent = ((e.clientX - startX) / runnableTrackWidth) * 100
-    const validPercent = Math.max(0, Math.min(percent, 100))
-    currentX = e.clientX
-    completedTrack.style.width = `${validPercent}%`
-    Object.getPrototypeOf(rangeSliderWithIndicator).value = validPercent
-    rangeSliderWithIndicator.dispatchEvent(new Event('input'))
+    console.log(e.clientX , startX);
+    // currentValue = Math.max(minValue, Math.min(maxValue, e.clientX))
+    // const percent =  getPercentValue(currentValue)
+    // console.log(percent);
+    // completedTrack.style.width = `${percent}%`
+    // Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
+    // rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
 }
  const thumbPointerUpHandler = (e) => {
-    console.log("pointer up");
-    rangeSliderWithIndicator.dispatchEvent(new Event('change'))
+    rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-change'))
 
     document.removeEventListener('pointermove', thumbPointerMoveHandler)
     document.removeEventListener('pointerup', thumbPointerUpHandler)
