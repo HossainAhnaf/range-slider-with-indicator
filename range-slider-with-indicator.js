@@ -36,19 +36,20 @@ function setSldierControls(rangeSliderWithIndicator,minValue,maxValue) {
 
   let currentValue = initialValue
   let startX = 0
-  completedTrack.style.width = `${getPercentValue(initialValue)}%`
+  completedTrack.style.width = `${ ((initialValue - minValue) / (maxValue - minValue)) * 100}%`
 
  function getPercentValue(value) {
-   return (value / maxValue) * 100
+   return  (value / maxValue) * 100
  }
-
  const thumbPointerMoveHandler = (e) => {
-    const value = (e.clientX - startX) / runnableTrackWidth * maxValue
-    currentValue = Math.max(minValue, Math.min(maxValue, value))
-    const percent =  getPercentValue(currentValue)
-    completedTrack.style.width = `${percent}%`
-    Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
-    rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
+    console.log( (e.clientX - startX) / runnableTrackWidth)
+
+    // const value = (e.clientX - startX) / runnableTrackWidth * maxValue
+    // currentValue = Math.max(minValue, Math.min(maxValue, value))
+    // const percent =  getPercentValue(currentValue)
+    // completedTrack.style.width = `${percent}%`
+    // Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
+    // rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
 }
  const thumbPointerUpHandler = (e) => {
     rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-change'))
