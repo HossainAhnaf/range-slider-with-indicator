@@ -28,9 +28,11 @@ div[role="range-slider-with-indicator"] > .slider > .runnable-track >.completed-
 
 }
 div[role="range-slider-with-indicator"] > .slider > .runnable-track > .thumb {
-width: 20px;
+width: .7em;
+scale: 1.5;
 height: 100%;
 background-color: white;
 cursor: grab;
 touch-action: none;
+
 }

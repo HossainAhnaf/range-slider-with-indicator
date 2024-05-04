@@ -8,7 +8,7 @@ function initRangeSliderWithIndicator(rangeSliderWithIndicator) {
       <div class="slider">
       <div class="runnable-track">
        <div class="completed-track"></div> 
-        <div class="thumb"></div>
+        <div  class="thumb"></div>
         </div>
       </div>
     `
@@ -39,18 +39,16 @@ function setSldierControls(rangeSliderWithIndicator) {
   completedTrack.style.width = `${getPercentValue(initialValue)}%`
 
  function getPercentValue(value) {
-    // console.log((value / maxValue) * 100);
    return (value / maxValue) * 100
  }
 
  const thumbPointerMoveHandler = (e) => {
-    console.log(e.clientX , startX);
-    // currentValue = Math.max(minValue, Math.min(maxValue, e.clientX))
-    // const percent =  getPercentValue(currentValue)
-    // console.log(percent);
-    // completedTrack.style.width = `${percent}%`
-    // Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
-    // rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
+    const value = (e.clientX - startX) / runnableTrackWidth * maxValue
+    currentValue = Math.max(minValue, Math.min(maxValue, value))
+    const percent =  getPercentValue(currentValue)
+    completedTrack.style.width = `${percent}%`
+    Object.getPrototypeOf(rangeSliderWithIndicator).value = currentValue
+    rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-input'))
 }
  const thumbPointerUpHandler = (e) => {
     rangeSliderWithIndicator.dispatchEvent(new Event('r-s-w-i-change'))
@@ -58,7 +56,6 @@ function setSldierControls(rangeSliderWithIndicator) {
     document.removeEventListener('pointermove', thumbPointerMoveHandler)
     document.removeEventListener('pointerup', thumbPointerUpHandler)
  }
-
   thumb.addEventListener('pointerdown', (e) => {
     console.log(e);
     const {width} = completedTrack.getBoundingClientRect()
@@ -66,6 +63,7 @@ function setSldierControls(rangeSliderWithIndicator) {
     document.addEventListener('pointermove', thumbPointerMoveHandler)
     document.addEventListener('pointerup', thumbPointerUpHandler)
  })
+ thumb.ondragstart = (e) => e.preventDefault()
 
 
  
