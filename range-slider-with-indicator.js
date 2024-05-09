@@ -6,6 +6,8 @@ class RangeSliderWithIndicator {
             input: this.element.oninput,
             change: this.element.onchange,
         };
+        this.marksDistance = parseInt(this.element.getAttribute('data-marks-distance')) || 10;
+
         this.value = parseInt(this.element.getAttribute('data-value')) || 0;
         this.minValue = parseInt(this.element.getAttribute('data-min')) || 0;
         this.maxValue = parseInt(this.element.getAttribute('data-max')) || 100;
@@ -27,14 +29,14 @@ class RangeSliderWithIndicator {
     `;
         this.runnableTrack = this.element.querySelector('.slider > .runnable-track');
         this.runnableTrackRect = this.runnableTrack.getBoundingClientRect()
-       setInterval(() => {
-        const {width,left} = this.runnableTrack.getBoundingClientRect()
-          if (this.runnableTrackRect.width  !==  width || this.runnableTrackRect.left !== left) {
-            this.initUI()
-          }
-       },1000)
-       this.setSliderControls();
-       this.setMarks();
+        setInterval(() => {
+            const { width, left } = this.runnableTrack.getBoundingClientRect()
+            if (this.runnableTrackRect.width !== width || this.runnableTrackRect.left !== left) {
+                this.initUI()
+            }
+        }, 1000)
+        this.setSliderControls();
+        this.setMarks();
     }
 
     initHandlers() {
@@ -77,24 +79,20 @@ class RangeSliderWithIndicator {
             document.removeEventListener('pointerup', thumbPointerUpHandler);
         };
 
-        thumb.addEventListener('pointerdown', (e) => {
-            const { width } = completedTrack.getBoundingClientRect();
-            startX = e.clientX - width;
-            document.addEventListener('pointermove', thumbPointerMoveHandler);
-            document.addEventListener('pointerup', thumbPointerUpHandler);
-        });
-
-        this.runnableTrack.addEventListener('click', (e) => {
+        this.runnableTrack.addEventListener('pointerdown', (e) => {        
             const completedWidth = e.clientX - this.runnableTrackRect.left;
-            thumb.style.left = `${completedWidth - thumbHalfWidth}px`;
-            completedTrack.style.width = `${completedWidth}px`;
             const newValue = Math.max(this.minValue, Math.min(this.maxValue, Math.round(this.minValue + (completedWidth / valueDivision))));
-
             if (newValue !== this.element.value) {
                 this.element.value = newValue;
                 this.element.dispatchEvent(new Event('r-s-w-i-input'));
                 this.element.dispatchEvent(new Event('r-s-w-i-change'));
             }
+            thumb.style.left = `${completedWidth - thumbHalfWidth}px`;
+            completedTrack.style.width = `${completedWidth}px`;
+            const { width } = completedTrack.getBoundingClientRect();
+            startX = (e.clientX - width);
+            document.addEventListener('pointermove', thumbPointerMoveHandler);
+            document.addEventListener('pointerup', thumbPointerUpHandler);
         });
 
         thumb.ondragstart = (e) => e.preventDefault();
@@ -121,9 +119,8 @@ class RangeSliderWithIndicator {
 
     getMarksText() {
         const marksTextArray = [];
-        const distance = parseInt(this.element.getAttribute('data-marks-distance'));
-        for (let i = this.minValue; i <= this.maxValue; i += distance) {
-          marksTextArray.push(i);
+        for (let i = this.minValue; i <= this.maxValue; i += this.marksDistance) {
+            marksTextArray.push(i);
         }
         return marksTextArray;
     }
