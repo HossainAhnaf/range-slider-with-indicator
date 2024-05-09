@@ -26,21 +26,22 @@ class RangeSliderWithIndicator {
       </div>
     `;
         this.runnableTrack = this.element.querySelector('.slider > .runnable-track');
-        this.runnableTrackRect = this.runnableTrack.getBoundingClientRect();
-        this.setSliderControls();
-        this.setMarks();
-        window.addEventListener("resize", () => {
-            this.runnableTrackRect = this.runnableTrack.getBoundingClientRect();
-            this.setSliderControls();
-            this.setMarks();
-        });
+        this.runnableTrackRect = this.runnableTrack.getBoundingClientRect()
+       setInterval(() => {
+        const {width,left} = this.runnableTrack.getBoundingClientRect()
+          if (this.runnableTrackRect.width  !==  width || this.runnableTrackRect.left !== left) {
+            this.initUI()
+          }
+       },1000)
+       this.setSliderControls();
+       this.setMarks();
     }
 
     initHandlers() {
         for (const key in this.handlers) {
-          const handler = this.handlers[key];
-          if (handler)
-          this.element.addEventListener(`r-s-w-i-${key}`, handler);
+            const handler = this.handlers[key];
+            if (handler)
+                this.element.addEventListener(`r-s-w-i-${key}`, handler);
         }
     }
     setSliderControls() {
@@ -51,25 +52,20 @@ class RangeSliderWithIndicator {
         const thumbHalfWidth = thumb.getBoundingClientRect().width / 2;
         const initialValueStr = this.element.getAttribute('data-value');
         const initialValue = initialValueStr === null ? this.minValue : parseInt(initialValueStr);
-        let rangeCurrentValue = initialValue;
+        this.element.value = initialValue;
         let valueDivision = this.runnableTrackRect.width / this.valueRange;
         let startX = 0;
         const initialCompletedWidth = valueDivision * (initialValue - this.minValue);
         thumb.style.left = `${initialCompletedWidth - thumbHalfWidth}px`;
         completedTrack.style.width = `${initialCompletedWidth}px`;
 
-        const dispatchInputHandler = () => {
-            this.element.value = rangeCurrentValue;
-            this.element.dispatchEvent(new Event('r-s-w-i-input'));
-        };
-
         const thumbPointerMoveHandler = (e) => {
             const movePx = e.clientX - startX;
             const completedWidth = Math.max(0, Math.min(movePx, this.runnableTrackRect.width));
             const newValue = Math.max(this.minValue, Math.min(this.maxValue, Math.round(this.minValue + (movePx / valueDivision))));
-            if (newValue !== rangeCurrentValue) {
-                rangeCurrentValue = newValue;
-                dispatchInputHandler();
+            if (newValue !== this.element.value) {
+                this.element.value = newValue;
+                this.element.dispatchEvent(new Event('r-s-w-i-input'));
             }
             thumb.style.left = `${completedWidth - thumbHalfWidth}px`;
             completedTrack.style.width = `${completedWidth}px`;
@@ -89,8 +85,16 @@ class RangeSliderWithIndicator {
         });
 
         this.runnableTrack.addEventListener('click', (e) => {
-            const px = e.clientX - this.runnableTrackRect.left;
-            
+            const completedWidth = e.clientX - this.runnableTrackRect.left;
+            thumb.style.left = `${completedWidth - thumbHalfWidth}px`;
+            completedTrack.style.width = `${completedWidth}px`;
+            const newValue = Math.max(this.minValue, Math.min(this.maxValue, Math.round(this.minValue + (completedWidth / valueDivision))));
+
+            if (newValue !== this.element.value) {
+                this.element.value = newValue;
+                this.element.dispatchEvent(new Event('r-s-w-i-input'));
+                this.element.dispatchEvent(new Event('r-s-w-i-change'));
+            }
         });
 
         thumb.ondragstart = (e) => e.preventDefault();
@@ -99,36 +103,50 @@ class RangeSliderWithIndicator {
     setMarks() {
 
         const indicator = this.element.querySelector('.indicator');
-        indicator.innerHTML = '';
-        const rangeSliderWithIndicatorWidth = this.element.getBoundingClientRect().width;
-        const totalMarks = Math.round(rangeSliderWithIndicatorWidth / 50);
-        const marksTextArray = this.getMarksText(this.minValue, this.valueRange, totalMarks);
-        const distance = rangeSliderWithIndicatorWidth / totalMarks;
+        const marksTextArray = this.getMarksText();
 
         for (let i = 0; i < marksTextArray.length; i++) {
             const marksText = document.createElement('div');
             const marksStop = document.createElement('div');
             marksText.classList.add('marks-text');
-            marksText.innerText = marksTextArray[i];
+            marksText.innerText = marksTextArray[i]
             marksStop.classList.add('marks-stop');
             indicator.append(marksText, marksStop);
-            const leftPx = (marksTextArray[i] - this.minValue) * (this.runnableTrackRect.width / this.valueRange);
-            const { width } = marksText.getBoundingClientRect();
+            const leftPx = (marksTextArray[i] - this.minValue) * (this.runnableTrackRect.width / this.valueRange)
+            const { width } = marksText.getBoundingClientRect()
             marksText.style.left = `${leftPx - width / 2}px`;
             marksStop.style.left = `${leftPx}px`;
         }
     }
 
-    getMarksText(minValue, valueRange, totalMarks) {
-        const marksTextArray = [minValue];
-        const increace = valueRange / totalMarks;
-        let multiply = 1;
-        for (let i = 1; i <= totalMarks; i++, multiply++) {
-            const marksText = minValue + increace * multiply;
-            marksTextArray.push(Math.round(marksText));
+    getMarksText() {
+        const marksTextArray = [];
+          const increace = this.getIncreace();
+          console.log(increace);
+        for (let i = this.minValue; i <= this.maxValue; i+=increace) {
+            marksTextArray.push(i);
         }
         return marksTextArray;
+        // const totalMarks = Math.round(this.runnableTrackRect.width / 70);
+
+                // const increace = this.valueRange / totalMarks;
+        // let multiply = 1;
+        // for (let i = 1; i <= totalMarks; i++, multiply++) {
+        //     const marksText = this.minValue + increace * multiply;
+        //     marksTextArray.push(Math.round(marksText));
+        // }
+        // console.log(marksTextArray);
     }
+    getIncreace() {
+        let multiply = 1;
+        const {width} = this.runnableTrackRect
+         if (width >= 150 && width < 500)
+          multiply =  2
+        else if (width >= 50 && width < 150)
+         multiply =  5
+        return Math.round(this.maxValue / 10) * multiply
+    }
+  
 }
 
 
