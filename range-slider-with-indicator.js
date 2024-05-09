@@ -121,32 +121,12 @@ class RangeSliderWithIndicator {
 
     getMarksText() {
         const marksTextArray = [];
-          const increace = this.getIncreace();
-          console.log(increace);
-        for (let i = this.minValue; i <= this.maxValue; i+=increace) {
-            marksTextArray.push(i);
+        const distance = parseInt(this.element.getAttribute('data-marks-distance'));
+        for (let i = this.minValue; i <= this.maxValue; i += distance) {
+          marksTextArray.push(i);
         }
         return marksTextArray;
-        // const totalMarks = Math.round(this.runnableTrackRect.width / 70);
-
-                // const increace = this.valueRange / totalMarks;
-        // let multiply = 1;
-        // for (let i = 1; i <= totalMarks; i++, multiply++) {
-        //     const marksText = this.minValue + increace * multiply;
-        //     marksTextArray.push(Math.round(marksText));
-        // }
-        // console.log(marksTextArray);
     }
-    getIncreace() {
-        let multiply = 1;
-        const {width} = this.runnableTrackRect
-         if (width >= 150 && width < 500)
-          multiply =  2
-        else if (width >= 50 && width < 150)
-         multiply =  5
-        return Math.round(this.maxValue / 10) * multiply
-    }
-  
 }
 
 
